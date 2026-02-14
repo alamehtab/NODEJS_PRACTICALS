@@ -7,7 +7,7 @@ exports.authMiddleware = async (req, res, next) => {
             return res.status(401).json({ message: "Token not provided" })
         }
         const token = authHeader.split(" ")[1]
-        const decoded = jwt.verify(token, process.env.JWT_SECRET)
+        const decoded = jwt.verify(token, process.env.JWT_ACCESS_SECRET)
         req.user = decoded
         next()
     } catch (error) {
@@ -19,6 +19,30 @@ exports.roleMiddleware = (...roles) => {
     return (req, res, next) => {
         if (!roles.includes(req.user.role)) {
             return res.status(401).json({ message: "You are authorized to access this endpoint." })
+        }
+        next()
+    }
+}
+
+exports.authMid = async (req, res, next) => {
+    try {
+        const authHeader = req.headers.authorization
+        if (!authHeader || !authHeader.startsWith("Bearer ")) {
+            return res.status(401).json({ message: "Token not provided!" })
+        }
+        const token = authHeader.split(" ")[1]
+        const decoded = jwt.verify(token, process.env.JWT_ACCESS_SECRET)
+        req.user = decoded
+        next()
+    } catch (error) {
+        return res.status(500).json({ message: error.message })
+    }
+}
+
+exports.authRole = (...roles) => {
+    return (req, res, next) => {
+        if (!roles.includes(req.user.role)) {
+            return res.status(401).json({ message: "Unauthorized!" })
         }
         next()
     }

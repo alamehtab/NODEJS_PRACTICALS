@@ -36,8 +36,16 @@ exports.login = async (req, res) => {
         if (!isMatch)
             return res.status(400).json({ message: "Invalid credentials" });
         // Create token
-        const token = jwt.sign({ email: email, role: user.role, id: user._id }, process.env.JWT_SECRET, { expiresIn: "1h" });
-        res.json({ token });
+        const accessToken = jwt.sign({ email: email, role: user.role, id: user._id }, process.env.JWT_ACCESS_SECRET, { expiresIn: "1h" });
+        const refreshToken = jwt.sign({ id: user._id }, process.env.JWT_REFRESH_SECRET, { expiresIn: "7d" })
+        user.refreshToken = refreshToken
+        await user.save()
+        res.cookie("refreshToken", refreshToken, {
+            httpOnly: true,
+            secure: false,
+            sameSite: "strict"
+        })
+        res.json({ accessToken });
     } catch (error) {
         res.status(500).json({ message: error.message });
     }
@@ -94,6 +102,38 @@ exports.resetPasswordWithOTP = async (req, res) => {
     }
 };
 
+exports.refreshToken = async (req, res) => {
+    try {
+        const token = req.cookies.refreshToken
+        if (!token) {
+            return res.status(401).json({ message: "No refresh token!" })
+        }
+        const decoded = jwt.verify(token, process.env.JWT_REFRESH_SECRET)
+        const user = await User.findById(decoded.id)
+        if (!user || user.refreshToken !== token) {
+            return res.status(401).json({ message: "Invalid token!" })
+        }
+        const newAccessToken = jwt.sign({ email: user.email, id: user._id, role: user.role }, process.env.JWT_ACCESS_TOKEN, { expiresIn: "1h" })
+        return res.status(200).json({ message: "New access token created!", newAccessToken })
+    } catch (error) {
+        return res.status(500).json({ message: error.message })
+    }
+}
+
+exports.logOut = async (req, res) => {
+    try {
+        const token = req.cookies.refreshToken
+        if (token) {
+            const decoded = jwt.verify(token, process.env.JWT_REFRESH_SECRET)
+            await User.findByIdAndUpdate(decoded.id, { refreshToken: null })
+        }
+        res.clearCookie("refreshToken")
+        return res.status(200).json({ message: "Logout successful!" })
+    } catch (error) {
+        return res.status(500).json({ message: error.message })
+    }
+}
+
 // exports.forgetPass = async (req, res) => {
 //     try {
 //         const { email } = req.body
@@ -133,3 +173,4 @@ exports.resetPasswordWithOTP = async (req, res) => {
 //         return res.status(500).json({ message: error.message })
 //     }
 // }
+

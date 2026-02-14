@@ -65,16 +65,14 @@ const storage = multer.diskStorage({
         cb(null, uniqueName + path.extname(file.originalname))
     }
 })
-
-const fileFilter = (req, file, cb) => {
-    const allowedFileType = ["image/png", "image/jpeg", "image.jpg"]
+const fileFilter = async (req, file, cb) => {
+    const allowedFileType = ["image/png", "image/jpeg", "image/jpg"]
     if (allowedFileType.includes(file.mimetype)) {
         cb(null, true)
     } else {
         cb(new Error("Invalid file type!"), false)
     }
 }
-
 exports.upload = multer({
     storage,
     fileFilter,

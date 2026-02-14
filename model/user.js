@@ -27,6 +27,7 @@ const userSchema = new Schema({
     role: { type: String, default: "user" },
     resetOtp: { type: String },
     resetOtpExpiriy: Date,
-    profilePicture: { type: String }
+    profilePicture: { type: String },
+    refreshToken: { type: String }
 })
 exports.User = mongoose.model("User", userSchema)
