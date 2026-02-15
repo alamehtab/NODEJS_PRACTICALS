@@ -8,4 +8,4 @@ const productSchema = new Schema({
     brand: { type: String }
 })
 
-exports.Products = mongoose.model("Products", productSchema)
+exports.Product = mongoose.model("Products", productSchema)
