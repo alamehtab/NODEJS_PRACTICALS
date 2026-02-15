@@ -28,6 +28,7 @@
 
 const express=require("express")
 const authRouter=require('./routes/authRoutes')
+const productRouter=require('./routes/productRoutes')
 const mongoose  = require("mongoose")
 require("dotenv").config()
 
@@ -35,6 +36,7 @@ const app=express()
 app.use(express.json())
 app.use("/uploads", express.static("uploads"));
 app.use('/api',authRouter.router)
+app.use('/api',productRouter.router)
 
 async function main(){
   try {
