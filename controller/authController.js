@@ -144,7 +144,7 @@ exports.logOut = async (req, res) => {
 //         const otp = Math.floor(100000 + Math.random() * 900000)
 //         const hashedOtp = await bcrypt.hash(otp, process.env.JWT_SECRET)
 //         user.resetOtp = hashedOtp
-//         user.resetOtpExpiriy = Date.now() + 5 * 60 * 1000
+//         user.resetOtpExpiry = Date.now() + 5 * 60 * 1000
 //         await user.save()
 //         await sendEmail(email, `OTP to reset your password","Your OTP to reset your password is ${otp}. It will be valid for 5 minutes.`)
 //         return res.status(200).json({ message: "Otp sent to your registered email." })
@@ -166,11 +166,10 @@ exports.logOut = async (req, res) => {
 //         }
 //         user.password = await bcrypt.hash(newpassword, 10)
 //         user.resetOtp = undefined
-//         user.resetOtpExpiriy = undefined
+//         user.resetOtpExpiry = undefined
 //         await user.save()
 //         return res.status(200).json({ message: "Your password was changed." })
 //     } catch (error) {
 //         return res.status(500).json({ message: error.message })
 //     }
 // }
-

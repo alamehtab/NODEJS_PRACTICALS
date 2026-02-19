@@ -26,28 +26,28 @@
 //   console.log(`Server running on port ${PORT}`);
 // });
 
-const express=require("express")
-const authRouter=require('./routes/authRoutes')
-const productRouter=require('./routes/productRoutes')
-const mongoose  = require("mongoose")
+const express = require("express")
+const authRouter = require('./routes/authRoutes')
+const productRouter = require('./routes/productRoutes')
+const mongoose = require("mongoose")
 require("dotenv").config()
 
-const app=express()
-app.use(express.json())
-app.use("/uploads", express.static("uploads"));
-app.use('/api',authRouter.router)
-app.use('/api',productRouter.router)
+const app = express()
+app.use(express.json({ limit: "10mb" }))
+app.use(express.urlencoded({ extended: true, limit: "10mb" }))
+app.use('/api', authRouter.router)
+app.use('/api', productRouter.router)
 
-async function main(){
+async function main() {
   try {
     await mongoose.connect(process.env.MONGO_URI)
     console.log("MongoDB connected");
   } catch (error) {
     console.log(error);
   }
-}main().catch((err)=>{console.log(err);})
+} main().catch((err) => { console.log(err); })
 
-const PORT=process.env.PORT || 3000
-app.listen(PORT,()=>{
+const PORT = process.env.PORT || 3000
+app.listen(PORT, () => {
   console.log(`server running on ${PORT}`);
 })

@@ -70,7 +70,7 @@ const fileFilter = async (req, file, cb) => {
     if (allowedFileType.includes(file.mimetype)) {
         cb(null, true)
     } else {
-        cb(new Error("Invalid file type!"), false)
+        cb(new Error("Invalid file type"), false)
     }
 }
 exports.upload = multer({
